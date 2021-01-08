@@ -2,49 +2,49 @@
 
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
-const User = require('./User');
+/* const User = require('./User'); */
 const Comment = require('./Comment');
 
 const postSchema = new Schema(
   {
     title: {
-      type: string,
+      type: String,
       trim: true,
       required: true,
       maxLength: 100,
     },
     body: {
-      type: string,
+      type: String,
       required: true,
     },
     author: {
       type: Schema.Types.ObjectIdb,
-      ref: User,
+      ref: 'User',
       required: true,
     },
     tags: {
-      type: [string],
+      type: [String],
       required: true,
     },
-    thumbnail: { type: string },
+    thumbnail: { type: String },
 
-    readTime: { type: string },
+    readTime: { type: String },
     likes: [
       {
         type: Schema.Types.ObjectIdb,
-        ref: User,
+        ref: 'User',
       },
     ],
     dislikes: [
       {
         type: Schema.Types.ObjectIdb,
-        ref: User,
+        ref: 'User',
       },
     ],
     comments: [
       {
         type: Schema.Types.ObjectIdb,
-        ref: Comment,
+        ref: 'Comment',
       },
     ],
   },

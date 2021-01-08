@@ -3,15 +3,15 @@
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 
-const Profile = require('./Profile');
+/* const Profile = require('./Profile'); */
 
 const userSchema = new Schema(
   {
-    name: {
+    username: {
       type: String,
       required: true,
       trim: true,
-      maxLength: 30,
+      maxLength: 15,
     },
     email: {
       type: String,
@@ -24,7 +24,7 @@ const userSchema = new Schema(
     },
     profile: {
       type: Schema.Types.ObjectId,
-      ref: Profile,
+      ref: 'Profile',
     },
   },
   { timestamps: true }

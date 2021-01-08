@@ -2,37 +2,37 @@
 
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
-const User = require('./User');
-const Post = require('./Post');
+/* const User = require('./User');
+const Post = require('./Post'); */
 
 
 const commentSchema = new Schema(
   {
     post: {
       type: Schema.Types.ObjectId,
-      ref: Post,
+      ref: 'Post',
       required: true,
     },
     user: {
       type: Schema.Types.ObjectId,
-      ref: User,
+      ref: 'User',
       required: true,
     },
 
     body: {
-      type: string,
+      type: String,
       trim: true,
       required: true,
     },
     replies: [
       {
         body: {
-          type: string,
+          type: String,
           required: true,
         },
         user: {
           type: Schema.Types.ObjectId,
-          ref: User,
+          ref: 'User',
           required: true,
         },
         createdAt: {

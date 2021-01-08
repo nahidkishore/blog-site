@@ -2,43 +2,50 @@
 
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
-const Post = require('./Post');
+/* const Post = require('./Post'); */
+
 const profileSchema = new Schema(
   {
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+      maxLength: 30,
+    },
     title: {
-      type: string,
+      type: String,
       trim: true,
       maxLength: 100,
     },
     bio: {
-      type: string,
+      type: String,
       trim: true,
       maxLength: 500,
     },
     profilePicture: {
-      type: string,
+      type: String,
     },
     links: {
-      website: string,
-      facebook: string,
-      twitter: string,
-      github: string,
-      linkedin: string,
+      website: String,
+      facebook: String,
+      twitter: String,
+      github: String,
+      linkedin: String,
     },
     posts: [
       {
         type: Schema.Types.ObjectId,
-        ref: Post,
+        ref: 'Post',
       },
     ],
     bookmarks: [
       {
         type: Schema.Types.ObjectId,
-        ref: Post,
+        ref:' Post',
       },
     ],
   },
