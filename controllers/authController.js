@@ -4,7 +4,11 @@ const { validationResult } = require('express-validator');
 
 const errorFormatter = require('../utils/validationErrorFormatter');
 exports.signupGetController = (req, res, next) => {
-  res.render('pages/auth/signup', { title: 'Create a new account', error: {},value:{} });
+  res.render('pages/auth/signup', {
+    title: 'Create a new account',
+    error: {},
+    value: {},
+  });
 };
 exports.signupPostController = async (req, res, next) => {
   /*  console.log(req.body); */
@@ -12,14 +16,15 @@ exports.signupPostController = async (req, res, next) => {
 
   let errors = validationResult(req).formatWith(errorFormatter);
 
- 
   if (!errors.isEmpty()) {
     return res.render('pages/auth/signup', {
       title: 'Create a new account',
       error: errors.mapped(),
-      value:{
-        username,email,password
-      }
+      value: {
+        username,
+        email,
+        password,
+      },
     });
   }
   try {
@@ -39,10 +44,18 @@ exports.signupPostController = async (req, res, next) => {
 };
 
 exports.loginGetController = (req, res, next) => {
-  res.render('pages/auth/login', { title: 'login your account' });
+  res.render('pages/auth/login', { title: 'login your account' ,error:{}});
 };
 exports.loginPostController = async (req, res, next) => {
   let { email, password } = req.body;
+  let errors = validationResult(req).formatWith(errorFormatter);
+
+  if (!errors.isEmpty()) {
+    return res.render('pages/auth/login', {
+      title: 'login your account',
+      error: errors.mapped(),
+    });
+  }
   try {
     let user = await User.findOne({ email });
 
@@ -54,8 +67,8 @@ exports.loginPostController = async (req, res, next) => {
     if (!match) {
       return res.json({ message: 'Invalid Credential' });
     }
-    console.log('successfully Logged in', user);
-    res.render('pages/auth/login', { title: 'login your account' });
+   /*  console.log('successfully Logged in', user); */
+    res.render('pages/auth/login', { title: 'login your account',error:{} });
   } catch (error) {
     console.log(error);
     next(error);
