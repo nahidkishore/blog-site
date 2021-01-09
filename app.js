@@ -2,12 +2,18 @@ const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 require("dotenv").config();
-const app = express();
+
 
 //auth routes
 
 const authRoutes = require('./routes/authRoute');
 
+
+//playground validator
+
+/* const playgroundValidators =require('./playground/validator') // todo should be remove */
+
+const app = express();
 //setup view engine
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -23,6 +29,7 @@ const middleware = [
 app.use(middleware);
 
 app.use('/auth', authRoutes);
+/* app.use('/playground',playgroundValidators); // todo should be remove */
 
 app.get('/', (req, res) => {
   res.json({
