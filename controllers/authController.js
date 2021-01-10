@@ -44,16 +44,20 @@ exports.signupPostController = async (req, res, next) => {
 };
 
 exports.loginGetController = (req, res, next) => {
-  res.render('pages/auth/login', { title: 'login your account' ,error:{}});
+  /* console.log(req.get('Cookie')) */
+  console.log(req.session.isLoggedIn, req.session.user);
+  res.render('pages/auth/login', { title: 'login your account', error: {} });
 };
 exports.loginPostController = async (req, res, next) => {
   let { email, password } = req.body;
+
   let errors = validationResult(req).formatWith(errorFormatter);
 
   if (!errors.isEmpty()) {
     return res.render('pages/auth/login', {
       title: 'login your account',
       error: errors.mapped(),
+      isLoggedIn,
     });
   }
   try {
@@ -67,12 +71,30 @@ exports.loginPostController = async (req, res, next) => {
     if (!match) {
       return res.json({ message: 'Invalid Credential' });
     }
-   /*  console.log('successfully Logged in', user); */
-    res.render('pages/auth/login', { title: 'login your account',error:{} });
+
+    req.session.isLoggedIn = true;
+    req.session.user = user;
+    req.session.save(err => {
+      if(err) {
+        console.log(err);
+        return next(err);
+      }
+     res.redirect('/dashboard')
+    });
+
+    
   } catch (error) {
     console.log(error);
     next(error);
   }
 };
 
-exports.logoutController = (req, res, next) => {};
+exports.logoutController = (req, res, next) => {
+  req.session.destroy(err=>{
+    if(err){
+      console.log(err);
+      return next(err);
+    }
+    return res.redirect('/auth/login')
+  })
+};
