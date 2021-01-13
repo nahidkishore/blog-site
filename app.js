@@ -1,62 +1,44 @@
 const express = require('express');
-const morgan = require('morgan');
-const mongoose = require('mongoose');
 require('dotenv').config();
-const session = require('express-session');
-const MongoDBStore = require('connect-mongodb-session')(session);
+const mongoose = require('mongoose');
+const config = require('config');
+const chalk = require('chalk');
 
+
+const setMiddleware =require('./middleware/middleware')
 //import routes
+const setRoutes = require('./routes/routes')
 
-const authRoutes = require('./routes/authRoute');
-const dashboardRoutes = require('./routes/dashboardRoute')
-//import auth middleware
-const { bindUserWithRequest } = require('./middleware/authMiddleware');
-const setLocals = require('./middleware/setLocals');
-//playground validator
 
-/* const playgroundValidators =require('./playground/validator') // todo should be remove */
+
+
 
 const app = express();
-
-// mongodb session store
-
-const store = new MongoDBStore({
-  uri: `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.jolmh.mongodb.net/nahid-blog?retryWrites=true&w=majority`,
-  collection: 'sessions',
-  expires: 1000 * 60 * 60 * 2,
-});
 
 //setup view engine
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
-//middleware array
+//using middleware from middleware directory
 
-const middleware = [
-  morgan('dev'),
-  express.static('public'),
-  express.urlencoded({ extended: true }),
-  express.json(),
-  session({
-    secret: process.env.SECRET_KEY || 'SECRET_KEY',
-    resave: false,
-    saveUninitialized: false,
-    store: store,
-  }),
-  bindUserWithRequest(),
-  setLocals(),
-];
-app.use(middleware);
+setMiddleware(app);
 
-app.use('/auth', authRoutes);
-app.use('/dashboard',dashboardRoutes);
-/* app.use('/playground',playgroundValidators); // todo should be remove */
+//using routes from route directory
 
-app.get('/', (req, res) => {
-  res.json({
-    message: 'Hello Blog post project is working fine',
-  });
-});
+setRoutes(app)
+
+app.use((req, res, next) =>{
+  let error=new Error('404 page not found')
+  error.status=404
+  next(error)
+})
+
+app.use((error,req, res, next) =>{
+if(error.status===404){
+  return res.render('pages/error/404', {flashMessage:{}})
+}
+res.render('pages/error/500', {flashMessage:{}})
+})
 
 const port = process.env.PORT || 5000;
 
@@ -66,7 +48,7 @@ mongoose
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(() => {
-    console.log('database connected');
+    console.log(chalk.yellow('database connected'));
     app.listen(port, () => {
       console.log(`server is listening on port ${port}`);
     });

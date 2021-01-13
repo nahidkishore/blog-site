@@ -1,13 +1,16 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const { validationResult } = require('express-validator');
-
+const Flash = require('../utils/flash');
 const errorFormatter = require('../utils/validationErrorFormatter');
+
+
 exports.signupGetController = (req, res, next) => {
   res.render('pages/auth/signup', {
     title: 'Create a new account',
     error: {},
     value: {},
+    flashMessage: Flash.getMessage(req),
   });
 };
 exports.signupPostController = async (req, res, next) => {
@@ -16,7 +19,9 @@ exports.signupPostController = async (req, res, next) => {
 
   let errors = validationResult(req).formatWith(errorFormatter);
 
+
   if (!errors.isEmpty()) {
+    req.flash('fail','Please check your Form')
     return res.render('pages/auth/signup', {
       title: 'Create a new account',
       error: errors.mapped(),
@@ -25,6 +30,7 @@ exports.signupPostController = async (req, res, next) => {
         email,
         password,
       },
+      flashMessage: Flash.getMessage(req),
     });
   }
   try {
@@ -34,9 +40,10 @@ exports.signupPostController = async (req, res, next) => {
       email,
       password: hashPassword,
     });
-    let createUser = await user.save();
-    console.log('created user successfully', createUser);
-    res.render('pages/auth/signup', { title: 'Create a new account' });
+
+    await user.save();
+    req.flash('success',' User Successfully created')
+    res.redirect('/auth/login');
   } catch (error) {
     console.log(error);
     next(error);
@@ -45,44 +52,61 @@ exports.signupPostController = async (req, res, next) => {
 
 exports.loginGetController = (req, res, next) => {
   /* console.log(req.get('Cookie')) */
-  console.log(req.session.isLoggedIn, req.session.user);
-  res.render('pages/auth/login', { title: 'login your account', error: {} });
+  /*   console.log(req.session.isLoggedIn, req.session.user); */
+  res.render('pages/auth/login', {
+    title: 'login your account',
+    error: {},
+    flashMessage: Flash.getMessage(req),
+  });
 };
 exports.loginPostController = async (req, res, next) => {
   let { email, password } = req.body;
 
   let errors = validationResult(req).formatWith(errorFormatter);
-
+  
   if (!errors.isEmpty()) {
+    req.flash('fail','Please check your Form')
     return res.render('pages/auth/login', {
       title: 'login your account',
       error: errors.mapped(),
-      isLoggedIn,
+   
+      flashMessage: Flash.getMessage(req),
     });
   }
   try {
     let user = await User.findOne({ email });
 
     if (!user) {
-      return res.json({ message: 'Invalid Credential' });
+      req.flash('fail','Please Provide valid credentials')
+      return res.render('pages/auth/login', {
+        title: 'login to your account',
+        error: {},
+      
+        flashMessage: Flash.getMessage(req),
+      });
     }
 
     let match = await bcrypt.compare(password, user.password);
     if (!match) {
-      return res.json({ message: 'Invalid Credential' });
+      req.flash('fail','Please Provide valid credentials')
+      return res.render('pages/auth/login', {
+        title: 'login your account',
+        error: {},
+      
+        flashMessage: Flash.getMessage(req),
+      });
     }
 
     req.session.isLoggedIn = true;
     req.session.user = user;
-    req.session.save(err => {
-      if(err) {
+    req.session.save((err) => {
+      if (err) {
         console.log(err);
         return next(err);
       }
-     res.redirect('/dashboard')
+      req.flash('success','Successfully Logged In')
+      res.redirect('/dashboard');
     });
-
-    
   } catch (error) {
     console.log(error);
     next(error);
@@ -90,11 +114,12 @@ exports.loginPostController = async (req, res, next) => {
 };
 
 exports.logoutController = (req, res, next) => {
-  req.session.destroy(err=>{
-    if(err){
+  req.session.destroy((err) => {
+    if (err) {
       console.log(err);
       return next(err);
     }
-    return res.redirect('/auth/login')
-  })
+    req.flash('success','Successfully Logout')
+    return res.redirect('/auth/login');
+  });
 };
