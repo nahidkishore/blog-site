@@ -1,34 +1,36 @@
-const authRoute = require('./authRoute');
-const dashboardRoute = require('./dashboardRoute');
+const authRoute = require('./authRoute')
+const dashboardRoute = require('./dashboardRoute')
+const playgroundRoute = require('../playground/play')
 
 const routes = [
-  {
-    path: '/auth',
-    handler: authRoute,
-  },
-  {
-    path: '/dashboard',
-
-    handler: dashboardRoute,
-  },
-  {
-    path: '/',
-
-    handler: (req, res) => {
-      /* res.json({
-        message: 'Hello Blog post project is working fine',
-      }); */
-      res.send('<h1>Hello Blog post project is working fine</h1>')
+    {
+        path: '/auth',
+        handler: authRoute
     },
-  },
-];
-
-module.exports = (app) => {
-  routes.forEach((r) => {
-    if(r.path ==='/'){
-      app.get(r.path,r.handler)
-    } else{
-      app.use(r.path, r.handler);
+    {
+        path: '/dashboard',
+        handler: dashboardRoute
+    },
+    {
+        path: '/playground',
+        handler: playgroundRoute
+    },
+    {
+        path: '/',
+        handler: (req, res) => {
+            res.json({
+                message: 'Hello World'
+            })
+        }
     }
-  });
-};
+]
+
+module.exports = app => {
+    routes.forEach(r => {
+        if (r.path === '/') {
+            app.get(r.path, r.handler)
+        } else {
+            app.use(r.path, r.handler)
+        }
+    })
+}
