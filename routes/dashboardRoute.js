@@ -12,7 +12,7 @@ const {
 
 router.get('/', isAuthenticated, dashboardGetController)
 
-router.get('/create-profile'. isAuthenticated, createProfileGetController)
+router.get('/create-profile', isAuthenticated, createProfileGetController)
 router.post('/create-profile', isAuthenticated, createProfilePostController)
 
 router.get('/edit-profile', isAuthenticated, editProfileGetController)

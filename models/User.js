@@ -1,34 +1,33 @@
-// name, email,profile, password
+// Name, Email, Password and Profile
 
-const mongoose = require('mongoose');
-const { Schema, model } = mongoose;
+const { Schema, model } = require('mongoose')
 
-/* const Profile = require('./Profile'); */
-
-const userSchema = new Schema(
-  {
+const userSchema = new Schema({
     username: {
-      type: String,
-      required: true,
-      trim: true,
-      maxLength: 15,
+        type: String,
+        trim: true,
+        maxlength: 15,
+        required: true
     },
     email: {
-      type: String,
-      required: true,
-    
+        type: String,
+        required: true
     },
     password: {
-      type: String,
-      required: true,
+        type: String,
+        required: true
     },
     profile: {
-      type: Schema.Types.ObjectId,
-      ref: 'Profile',
+        type: Schema.Types.ObjectId,
+        ref: 'Profile'
     },
-  },
-  { timestamps: true }
-);
+    profilePics: {
+        type: String,
+        default: '/uploads/default.png'
+    }
+}, {
+    timestamps: true
+})
 
-const User = model('User', userSchema);
-module.exports = User;
+const User = model('User', userSchema)
+module.exports = User

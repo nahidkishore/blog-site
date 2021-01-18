@@ -1,55 +1,52 @@
-// user(user id), title, bio, profile Picture, social link(fb,twitter,github, linkedin)
+// user, title, bio, profilePics, links: {fb, twi, }, posts, bookmarks
 
-const mongoose = require('mongoose');
-const { Schema, model } = mongoose;
-/* const Post = require('./Post'); */
+const { Schema, model } = require('mongoose')
 
-const profileSchema = new Schema(
-  {
+const profileSchema = new Schema({
     user: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     },
     name: {
-      type: String,
-      required: true,
-      trim: true,
-      maxLength: 30,
+        type: String,
+        required: true,
+        trim: true,
+        maxlength: 50
     },
     title: {
-      type: String,
-      trim: true,
-      maxLength: 100,
+        type: String,
+        trim: true,
+        required: true,
+        maxlength: 100
     },
     bio: {
-      type: String,
-      trim: true,
-      maxLength: 500,
+        type: String,
+        required: true,
+        trim: true,
+        maxlength: 500
     },
-    profilePicture: {
-      type: String,
-    },
+    profilePic: String,
     links: {
-      website: String,
-      facebook: String,
-      twitter: String,
-      github: String,
-      linkedin: String,
+        website: String,
+        facebook: String,
+        twitter: String,
+        github: String
     },
     posts: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Post',
-      },
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Post'
+        }
     ],
     bookmarks: [
-      {
-        type: Schema.Types.ObjectId,
-        ref:' Post',
-      },
-    ],
-  },
-  { timestamps: true }
-);
-const Profile = model('Profile', profileSchema);
-module.exports = Profile;
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Post'
+        }
+    ]
+}, {timestamps: true})
+
+const Profile = model('Profile', profileSchema)
+
+module.exports = Profile
